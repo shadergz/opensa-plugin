@@ -1,0 +1,3 @@
+[submodule "lib/hookrta64"]
+	path = lib/hookrta64
+	url = git@github.com:beloncode/hookrta64.git

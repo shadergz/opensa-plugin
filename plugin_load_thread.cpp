@@ -1,11 +1,22 @@
 #include <jni.h>
+#include <pthread.h>
 
 #include <cstdint>
+/* #include <memory> */
 
 #include <hookrt/object.h>
 
+#include <opensa_logger.h>
+
 using namespace hookrt::info;
 using namespace hookrt::object;
+
+typedef pthread_t worker_thread_t;
+
+/* std::shared_ptr<Client_Log::OpenSA_Logger> MAIN_SA_Logger; */
+static Client_Log::OpenSA_Logger MAIN_SA_Logger;
+
+static worker_thread_t main_thread = 0, hook_thread = 0;
 
 static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
 
@@ -42,12 +53,12 @@ static GTASA_Native_Object gNative_GTASA_object;
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) 
 {
     /* Searching for the native GTASA library */
-    Native_Info hookedLibGTASA("libGTASA.so");
+    Native_Info hooked_LibGTASA("libGTASA.so");
     /* This copy is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
-    gNative_GTASA_object = hookedLibGTASA;
+    gNative_GTASA_object = hooked_LibGTASA;
     /* JNI_OnLoad function must returns the JNI needed version */
     return JNI_VERSION_1_6;
 }

@@ -82,7 +82,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     /* MAIN_SA_Logger = std::make_unique<Client_Log::OpenSA_Logger>(); */
 
     Android_Info(MAIN_SA_Logger, "OpenSA loaded into heap! and was hooked "
-        "by JVM! Compiled at: %s:%s", __DATE__, __TIME__);
+        "by Android Runtime! Compiled at: %s:%s\n", __DATE__, __TIME__);
     
     /* Searching for the native GTASA library */
     Native_Info hooked_LibGTASA("libGTASA.so");

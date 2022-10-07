@@ -4,15 +4,15 @@
 #include <android/log.h>
 
 /* #include <memory> */
+#include <cstring>
 #include <cstdarg>
 #include <cstdint>
 
 namespace Client_Log {
-    constexpr short FORMAT_BUFFER_SZ = 0x4f;
+    constexpr short FORMAT_BUFFER_SZ = 0x6f;
     constexpr short FORMAT_OUTPUT_SZ = FORMAT_BUFFER_SZ * 2;
 
-    struct LOG_Location
-    {
+    struct LOG_Location {
     public:
         const char* m_filename;
         uint32_t m_line;

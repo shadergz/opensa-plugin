@@ -5,19 +5,18 @@
 
 constexpr const char* const LOGD_TAG = "OpenSA";
 
-static Client_Log::LOG_Options m_default_log;
+static Client_Log::LOG_Options gs_default_log;
 
 namespace Client_Log {
     OpenSA_Logger::OpenSA_Logger() noexcept {
-        m_default_log.m_TAG = LOGD_TAG;
+        gs_default_log.m_TAG = LOGD_TAG;
         /* Copy and initialize the default logger options structure data */
-        /* m_log_options = std::make_unique<LOG_Options>(m_default_log); */
-        m_log_options = m_default_log;
+        /* m_log_options = std::make_unique<LOG_Options>(gs_default_log); */
+        m_log_options = gs_default_log;
     }
 
     void OpenSA_Logger::Android_Release(const LOG_Release_Info* release_info) {
-        if (m_log_options.m_use_logcat)
-        {
+        if (m_log_options.m_use_logcat) {
             __android_log_write(release_info->m_prior, release_info->m_TAG_name, 
                 release_info->m_output_buffer);
         }

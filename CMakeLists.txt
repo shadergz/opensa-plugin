@@ -6,6 +6,6 @@ project(OpenSA)
 add_subdirectory(lib/hookrta64)
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_library(opensa SHARED plugin_load_thread.cpp opensa_logger.cpp)
-target_link_libraries(opensa hookrta64 log)
+add_library(OpenSA SHARED plugin_load_thread.cpp opensa_logger.cpp)
+target_link_libraries(OpenSA hookrta64 log)
 

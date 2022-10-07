@@ -69,14 +69,14 @@ namespace Client_Log {
             do \
             {\
                 Client_Log::LOG_Location __actual_location {\
-                    .m_filename = __FILE__,\
+                    .m_filename = strrchr(__FILE__, '/') + 1,\
                     .m_line = __LINE__\
                 };\
                 const Client_Log::LOG_Launch_Data __current_log_launch {\
                     .m_priority = ANDROID_LOG_INFO,\
                     .m_location = &__actual_location\
                 };\
-                logger.Android_Launch(&__current_log_launch, format, __VA_ARGS__);\
+                logger.Android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
             }\
             while(0)
 

@@ -64,7 +64,14 @@ namespace OpenSA_Threads {
     static __attribute__((visibility("hidden"))) void* INIT_Hook_SYSTEM(void* SAVED_PTR) {
         __attribute__((unused)) auto *thread_info = static_cast<Thread_Data*>(SAVED_PTR);
 
-        while(1) {}
+        static const struct timespec sleep_nano = {
+            .tv_sec = 2,
+        };
+
+        while (1) {
+            nanosleep(&sleep_nano, nullptr);
+            Android_Info(MAIN_SA_Logger, "OpenSA is running\n");
+        }
 
         return static_cast<void*>(thread_info);
     }

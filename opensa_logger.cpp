@@ -37,7 +37,7 @@ namespace Client_Log {
         case ANDROID_LOG_INFO: produce_info->m_status_str = "Info"; break;
         }
 
-        uintptr_t buffer_ptr_location = 0, remain_buffer_sz;
+        uintptr_t buffer_ptr_location = 0, remain_buffer_sz = 0;
         char* const base_buffer_ptr = produce_info->m_output_buffer;
 
         const LOG_Location* location = &produce_info->log_local;

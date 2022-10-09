@@ -23,15 +23,14 @@ namespace Client_Log {
     }
 
     ssize_t OpenSA_Logger::Android_Produce(LOG_Release_Info* produce_info) {
-        switch(produce_info->m_prior)
-        {
+        switch(produce_info->m_prior) {
         default:
         case ANDROID_LOG_UNKNOWN:
         case ANDROID_LOG_DEFAULT:
-        case ANDROID_LOG_VERBOSE:
+        case ANDROID_LOG_VERBOSE: produce_info->m_status_str = "Success"; break;
         case ANDROID_LOG_DEBUG:
         case ANDROID_LOG_WARN:
-        case ANDROID_LOG_ERROR:
+        case ANDROID_LOG_ERROR: produce_info->m_status_str = "Error"; break;
         case ANDROID_LOG_FATAL:
         case ANDROID_LOG_SILENT:
         case ANDROID_LOG_INFO: produce_info->m_status_str = "Info"; break;
@@ -55,26 +54,21 @@ namespace Client_Log {
             INC_BUFFER(snprintf(OUTPUT_LOCATION, REMAIN_SIZE, message, ##__VA_ARGS__))
 
         /* (TAG FILE:LINE) <Status> -> MESSAGE */
-
-        if (m_log_options.m_dsp_TAG)
-        {
+        
+        if (m_log_options.m_dsp_TAG) {
             EXPAND_BUFFER("(%s ", m_log_options.m_TAG);
         }
-        if (m_log_options.m_file_status)
-        {
+        if (m_log_options.m_file_status) {
             EXPAND_BUFFER("%s:%d) ", location->m_filename, location->m_line); 
-        } else
-        { 
+        } else { 
             EXPAND_BUFFER(") "); 
         }
 
-        if (m_log_options.m_dsp_status)
-        {
+        if (m_log_options.m_dsp_status) {
             EXPAND_BUFFER("<%s> ", produce_info->m_status_str);
         }
 
-        EXPAND_BUFFER("-> %s", produce_info->m_format_buffer);
-
+        EXPAND_BUFFER("%s", produce_info->m_format_buffer);
         return static_cast<ssize_t>(buffer_ptr_location);
     }
 

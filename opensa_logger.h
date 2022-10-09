@@ -65,7 +65,7 @@ namespace Client_Log {
         OpenSA_Logger() noexcept;
         ~OpenSA_Logger() = default;
 
-        #define Android_Info(logger, format, ...)\
+        #define Android_Logger_DO(logger, launch_result, status, format, ...)\
             do \
             {\
                 Client_Log::LOG_Location __actual_location {\
@@ -73,13 +73,20 @@ namespace Client_Log {
                     .m_line = __LINE__\
                 };\
                 const Client_Log::LOG_Launch_Data __current_log_launch {\
-                    .m_priority = ANDROID_LOG_INFO,\
+                    .m_priority = status,\
                     .m_location = &__actual_location\
                 };\
-                logger.Android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
+                launch_result = logger.Android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
             }\
             while(0)
 
+        #define Android_Success(logger, launch_result, format, ...)\
+            Android_Logger_DO(logger, launch_result, ANDROID_LOG_VERBOSE, format, ##__VA_ARGS__)
+        #define Android_Info(logger, launch_result, format, ...)\
+            Android_Logger_DO(logger, launch_result, ANDROID_LOG_INFO, format, ##__VA_ARGS__)
+        #define Android_Error(logger, launch_result, format, ...)\
+            Android_Logger_DO(logger, launch_result, ANDROID_LOG_ERROR, format, ##__VA_ARGS__)
+        
         ssize_t Android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...);
         void configure_user_output(int opened_fd, const char* opt_filename = nullptr);
 

@@ -3,13 +3,12 @@
 
 #include <android/log.h>
 
-/* #include <memory> */
 #include <cstring>
 #include <cstdarg>
 #include <cstdint>
 
 namespace Client_Log {
-    constexpr short FORMAT_BUFFER_SZ = 0x6f;
+    constexpr short FORMAT_BUFFER_SZ = 0x13f;
     constexpr short FORMAT_OUTPUT_SZ = FORMAT_BUFFER_SZ * 2;
 
     struct LOG_Location {

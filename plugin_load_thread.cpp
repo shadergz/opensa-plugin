@@ -1,34 +1,45 @@
+#include <cstdint>
+#include <cassert>
+
 #include <jni.h>
 #include <pthread.h>
 
-#include <cstdint>
-/* #include <memory> */
-
 #include <hookrt/object.h>
+#include <hookrt/info.h>
 
 #include <opensa_logger.h>
 
-using namespace hookrt::info;
 using namespace hookrt::object;
+using namespace hookrt::info;
 
 typedef pthread_t worker_thread_t;
 
-/* std::shared_ptr<Client_Log::OpenSA_Logger> MAIN_SA_Logger; */
 static Client_Log::OpenSA_Logger MAIN_SA_Logger;
 
 static worker_thread_t main_thread = 0, hook_thread = 0;
+static ssize_t g_log_result;
 
 static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
 
-class GTASA_Native_Object : public Native_Object {
+struct GTASA_Native_Object : public Native_Object {
 public:
-    GTASA_Native_Object(Native_Info& info) {
-        
-    }
     GTASA_Native_Object() {}
+    ~GTASA_Native_Object() {}
+    Hook_I32_t native_Notify(Notify_Event_t status, const char* message);
+
 };
 
-static GTASA_Native_Object gNative_GTASA_object;
+Hook_I32_t GTASA_Native_Object::native_Notify(Notify_Event_t status, const char* message) {
+    Hook_I32_t result = -1;
+    switch(status) {
+    case HOOK_SUCCESS: Android_Success(MAIN_SA_Logger, result, message); break;
+    case HOOK_INFO: Android_Info(MAIN_SA_Logger, result, message); break;
+    case HOOK_FAILED: Android_Error(MAIN_SA_Logger, result, message); break;
+    }
+    return result;
+}
+
+static GTASA_Native_Object gNative_GTASA_Object;
 
 /* When game initialize this function will be called by the 
  * JVM from Android Runtime.
@@ -68,9 +79,9 @@ namespace OpenSA_Threads {
             .tv_sec = 2,
         };
 
-        while (1) {
+        while (true) {
             nanosleep(&sleep_nano, nullptr);
-            Android_Info(MAIN_SA_Logger, "OpenSA is running\n");
+            Android_Info(MAIN_SA_Logger, g_log_result, "OpenSA is running...\n");
         }
 
         return static_cast<void*>(thread_info);
@@ -79,23 +90,24 @@ namespace OpenSA_Threads {
 };
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-    /* MAIN_SA_Logger = std::make_unique<Client_Log::OpenSA_Logger>(); */
 
-    Android_Info(MAIN_SA_Logger, "OpenSA loaded into heap! and was hooked "
-        "by Android Runtime! Compiled at: %s:%s\n", __DATE__, __TIME__);
+    Android_Info(MAIN_SA_Logger, g_log_result, 
+        "OpenSA loaded into heap! and was hooked by Android Runtime! " 
+        "Compiled at: %s:%s\n", __DATE__, __TIME__);
     
     /* Searching for the native GTASA library */
-    Native_Info hooked_LibGTASA("libGTASA.so");
-    /* This copy is done here, because we won't that the search for libGTASA
+    gNative_GTASA_Object.find_Base_Address("libGTASA.so");
+    /* This is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
-    gNative_GTASA_object = hooked_LibGTASA;
-    /* JNI_OnLoad function must returns the JNI needed version */
+    Android_Success(MAIN_SA_Logger, g_log_result, "libGTASA.so image base address: %#lx\n", 
+        gNative_GTASA_Object.get_Native_Addr());
 
     pthread_create(&main_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);
     pthread_create(&hook_thread, nullptr, OpenSA_Threads::Plugin_StartMAIN, nullptr);
 
+    /* JNI_OnLoad function must returns the JNI needed version */
     return JNI_VERSION_1_6;
 }
 

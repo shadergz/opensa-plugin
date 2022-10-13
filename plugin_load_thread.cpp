@@ -8,18 +8,25 @@
 #include <hookrt/info.h>
 
 #include <opensa_logger.h>
+#include <opensa_objects.h>
 
 #include <sa_config.h>
 
 using namespace hookrt::object;
 using namespace hookrt::info;
 
-typedef pthread_t worker_thread_t;
+OpenSA::OpenSA_Logger gMAIN_SA_Logger;
+OpenSA::JVM_Objects gThread_Objects;
+JNIEnv* gMAIN_Env = nullptr;
 
-static Client_Log::OpenSA_Logger MAIN_SA_Logger;
+typedef pthread_t worker_thread_t;
+pthread_mutex_t gHook_Mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t gHook_Cond = PTHREAD_COND_INITIALIZER;
 
 static worker_thread_t main_thread = 0, hook_thread = 0;
-static ssize_t g_log_result;
+
+static int gJVM_Status;
+static ssize_t gLog_Result;
 
 static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
 
@@ -34,9 +41,9 @@ public:
 Hook_I32_t GTASA_Native_Object::native_Notify(Notify_Event_t status, const char* message) {
     Hook_I32_t result = -1;
     switch(status) {
-    case HOOK_SUCCESS: Android_Success(MAIN_SA_Logger, result, message); break;
-    case HOOK_INFO: Android_Info(MAIN_SA_Logger, result, message); break;
-    case HOOK_FAILED: Android_Error(MAIN_SA_Logger, result, message); break;
+    case HOOK_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;
+    case HOOK_INFO: Android_Info(gMAIN_SA_Logger, result, message); break;
+    case HOOK_FAILED: Android_Error(gMAIN_SA_Logger, result, message); break;
     }
     return result;
 }
@@ -71,32 +78,60 @@ namespace OpenSA_Threads {
 
     static __attribute__((visibility("hidden"))) void* Plugin_StartMAIN(void* SAVED_PTR) {
         __attribute__((unused)) auto* thread_info = static_cast<Thread_Data*>(SAVED_PTR);
+        /* Start the hook thread now, we can continues the execution after his return */
+        pthread_cond_signal(&gHook_Cond);
+        /* Waiting until the hook thread begin in finished state */
+        pthread_join(hook_thread, nullptr);
+
+        static const struct timespec sleep_nano = {
+            .tv_sec = 4,
+        };
+        while (true) {
+            Android_Info(gMAIN_SA_Logger, gLog_Result, "Inside MAIN\n");
+            nanosleep(&sleep_nano, nullptr);
+        }
+
         return static_cast<void*>(thread_info);
     }
 
     static __attribute__((visibility("hidden"))) void* INIT_Hook_SYSTEM(void* SAVED_PTR) {
         __attribute__((unused)) auto* thread_info = static_cast<Thread_Data*>(SAVED_PTR);
 
-        static const struct timespec sleep_nano = {
-            .tv_sec = 2,
-        };
+        /* Acquire the lock, Release the lock and wait for the main thread be called */
+        pthread_mutex_lock(&gHook_Mutex);
+        pthread_cond_wait(&gHook_Cond, &gHook_Mutex);
 
-        while (true) {
-            nanosleep(&sleep_nano, nullptr);
-            Android_Info(MAIN_SA_Logger, g_log_result, "OpenSA is running...\n");
-        }
+        gThread_Objects.SpawnToast("OpenSA is running...", OpenSA::Toast_Duration::TOAST_SHORT);
 
+        pthread_mutex_unlock(&gHook_Mutex);
+        Android_Info(gMAIN_SA_Logger, gLog_Result, "Hook thread has finished\n");
         return static_cast<void*>(thread_info);
     }
 
 };
 
-JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_Resume(JavaVM* vm, jobject GTASA_Context) {
+    Android_Info(gMAIN_SA_Logger, gLog_Result, "Resume has been called!\n");
+    gThread_Objects.Init_Load_Objects(&gJVM_Status, GTASA_Context);
+    pthread_create(&main_thread, nullptr, OpenSA_Threads::Plugin_StartMAIN, nullptr);
+}
 
-    Android_Info(MAIN_SA_Logger, g_log_result, 
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
+
+    Android_Info(gMAIN_SA_Logger, gLog_Result, 
         "OpenSA loaded into heap! and was hooked by Android Runtime! " 
         "Compiled at: %s:%s\n", __DATE__, __TIME__);
     
+    gJVM_Status = vm->GetEnv(reinterpret_cast<void**>(&gMAIN_Env), JNI_VERSION_1_6);
+    if (gJVM_Status < 0) {
+        Android_Error(gMAIN_SA_Logger, gLog_Result, "Failed to get the JNI env from the main process, assuming native thread\n");
+        gJVM_Status = vm->AttachCurrentThread(&gMAIN_Env, nullptr);
+        if (gJVM_Status < 0) {
+            Android_Error(gMAIN_SA_Logger, gLog_Result, "For some reason, your device can't attach the current thread to JNI env\n");
+            return JNI_ERR;
+        }
+    }
+
     /* Searching for the native GTASA library */
     gNative_GTASA_Object.find_Base_Address("libGTASA.so");
     /* This is done here, because we won't that the search for libGTASA
@@ -104,12 +139,11 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
      * __cxa_finalize@plt or inside similar functions.
     */
 #if defined(_OPENSA_DEBUG_)
-    Android_Success(MAIN_SA_Logger, g_log_result, "libGTASA.so image base address: %#lx\n", 
+    Android_Success(gMAIN_SA_Logger, gLog_Result, "libGTASA.so image base address: %#lx\n", 
         gNative_GTASA_Object.get_Native_Addr());
 #endif
-
-    pthread_create(&main_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);
-    pthread_create(&hook_thread, nullptr, OpenSA_Threads::Plugin_StartMAIN, nullptr);
+    /* Starting the Hook thread, this thread will be locked until the VM call the OpenSA_Resume function */
+    pthread_create(&hook_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);
 
     /* JNI_OnLoad function must returns the JNI needed version */
     return JNI_VERSION_1_6;

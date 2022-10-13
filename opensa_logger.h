@@ -7,7 +7,7 @@
 #include <cstdarg>
 #include <cstdint>
 
-namespace Client_Log {
+namespace OpenSA {
     constexpr short FORMAT_BUFFER_SZ = 0x13f;
     constexpr short FORMAT_OUTPUT_SZ = FORMAT_BUFFER_SZ * 2;
 
@@ -67,11 +67,11 @@ namespace Client_Log {
         #define Android_Logger_DO(logger, launch_result, status, format, ...)\
             do \
             {\
-                Client_Log::LOG_Location __actual_location {\
+                OpenSA::LOG_Location __actual_location {\
                     .m_filename = strrchr(__FILE__, '/') + 1,\
                     .m_line = __LINE__\
                 };\
-                const Client_Log::LOG_Launch_Data __current_log_launch {\
+                const OpenSA::LOG_Launch_Data __current_log_launch {\
                     .m_priority = status,\
                     .m_location = &__actual_location\
                 };\

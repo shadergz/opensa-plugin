@@ -5,9 +5,9 @@
 
 constexpr const char* const LOGD_TAG = "OpenSA";
 
-static Client_Log::LOG_Options gs_default_log;
+static OpenSA::LOG_Options gs_default_log;
 
-namespace Client_Log {
+namespace OpenSA {
     OpenSA_Logger::OpenSA_Logger() noexcept {
         gs_default_log.m_TAG = LOGD_TAG;
         /* Copy and initialize the default logger options structure data */

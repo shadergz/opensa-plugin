@@ -101,8 +101,6 @@ namespace OpenSA_Threads {
         pthread_mutex_lock(&gHook_Mutex);
         pthread_cond_wait(&gHook_Cond, &gHook_Mutex);
 
-        gThread_Objects.SpawnToast("OpenSA is running...", OpenSA::Toast_Duration::TOAST_SHORT);
-
         pthread_mutex_unlock(&gHook_Mutex);
         Android_Info(gMAIN_SA_Logger, gLog_Result, "Hook thread has finished\n");
         return static_cast<void*>(thread_info);
@@ -110,9 +108,11 @@ namespace OpenSA_Threads {
 
 };
 
-JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_Resume(JavaVM* vm, jobject GTASA_Context) {
+extern "C" JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_1Resume(JNIEnv* env, jobject GTASA_Context) {
     Android_Info(gMAIN_SA_Logger, gLog_Result, "Resume has been called!\n");
     gThread_Objects.Init_Load_Objects(&gJVM_Status, GTASA_Context);
+    gThread_Objects.SpawnToast("OpenSA is running...", OpenSA::Toast_Duration::TOAST_SHORT);
+
     pthread_create(&main_thread, nullptr, OpenSA_Threads::Plugin_StartMAIN, nullptr);
 }
 

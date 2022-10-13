@@ -19,7 +19,7 @@ namespace OpenSA {
         mToast_MakeTextID = gMAIN_Env->GetStaticMethodID(mToast_Class, "makeText", "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;");
         
         if (mToast_MakeTextID == nullptr)
-            Android_Error(gMAIN_SA_Logger, gMessageStatus, "Can't locate the Toast object, Toast methods are disable\n");
+            Android_Error(gMAIN_SA_Logger, gMessageStatus, "Can't locate the Toast method, Toast methods are disable\n");
         
     }
 
@@ -30,6 +30,10 @@ namespace OpenSA {
         Android_Info(gMAIN_SA_Logger, gMessageStatus, "Spawning the Toast message: %s\n", toast_Message);
 
         jstring tObject_Message = gMAIN_Env->NewStringUTF(toast_Message);
+        if (gMAIN_Env->ExceptionOccurred()) {
+            gMAIN_Env->ExceptionDescribe();
+            return;
+        }
         jobject toastObject = gMAIN_Env->CallStaticObjectMethod(mToast_Class, mToast_MakeTextID, mThizContext, 
             tObject_Message, toast_Duration);
         jmethodID toastShow = gMAIN_Env->GetMethodID(mToast_Class, "show", "()V");

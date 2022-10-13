@@ -3,8 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 project(OpenSA)
 
-set(_OPENSA_DEBUG_ True)
-option(_OPENSA_DEBUG_ "Enable debug mode" True)
+option(_OPENSA_DEBUG_ "Enable developer mode" False)
 
 if (${_OPENSA_DEBUG_} STREQUAL True)
     set(_HOOK_RT_DEBUG_ True)

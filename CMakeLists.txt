@@ -3,8 +3,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 project(OpenSA)
 
+set(_OPENSA_DEBUG_ True)
+option(_OPENSA_DEBUG_ "Enable debug mode" True)
+
+if (${_OPENSA_DEBUG_} STREQUAL True)
+    set(_HOOK_RT_DEBUG_ True)
+endif()
+
+configure_file(sa_config.h.in sa_config.h)
+
 add_subdirectory(lib/hookrta64)
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(OpenSA SHARED plugin_load_thread.cpp opensa_logger.cpp)
 target_link_libraries(OpenSA hookrta64 log)

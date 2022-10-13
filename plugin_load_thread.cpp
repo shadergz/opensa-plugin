@@ -9,6 +9,8 @@
 
 #include <opensa_logger.h>
 
+#include <sa_config.h>
+
 using namespace hookrt::object;
 using namespace hookrt::info;
 
@@ -101,8 +103,10 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
+#if defined(_OPENSA_DEBUG_)
     Android_Success(MAIN_SA_Logger, g_log_result, "libGTASA.so image base address: %#lx\n", 
         gNative_GTASA_Object.get_Native_Addr());
+#endif
 
     pthread_create(&main_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);
     pthread_create(&hook_thread, nullptr, OpenSA_Threads::Plugin_StartMAIN, nullptr);

@@ -13,17 +13,17 @@ namespace OpenSA {
 
     struct LOG_Location {
     public:
-        const char* m_filename;
-        uint32_t m_line;
+        const char* mLocal_Filename;
+        uint32_t mLocal_Line;
     };
 
     struct LOG_Release_Info {
     public:
-        const char* m_TAG_name;
-        const char* m_status_str;
+        const char* mTAG_Name;
+        const char* mStatus_Str;
 
-        const android_LogPriority m_prior;
-        LOG_Location log_local;
+        const android_LogPriority mPriority_Event;
+        LOG_Location mLog_Location;
 
         char m_format_buffer[FORMAT_BUFFER_SZ];
         char m_output_buffer[FORMAT_OUTPUT_SZ];
@@ -31,8 +31,8 @@ namespace OpenSA {
 
     struct LOG_Launch_Data {
     public:
-        const android_LogPriority m_priority;
-        const LOG_Location* m_location;
+        const android_LogPriority mPriority;
+        const LOG_Location* mLocation;
     };
 
     struct LOG_Options {
@@ -41,18 +41,18 @@ namespace OpenSA {
         LOG_Options(const LOG_Options& copy_options) {
             memcpy(this, &copy_options, sizeof(copy_options));
         }
-        bool m_dsp_TAG = true;
-        bool m_dsp_status = true;
+        bool mDsp_TAG = true;
+        bool mDsp_Status = true;
         /* Display information like the file and line where the log originate from */
-        bool m_file_status = true;
+        bool mFile_Status = true;
 
-        const char* m_TAG = nullptr;
+        const char* mTAG = nullptr;
         /* -> When enable by default, the log system will display the message into the 
          * Android logcat message system, otherwise, only the file descriptor will be used into
          * log release operations <-
         */
-        bool m_use_logcat = true;
-        int m_opened_FD = -1;
+        bool mUse_Logcat = true;
+        int mOpened_FD = -1;
     };
 
     class OpenSA_Logger {
@@ -68,12 +68,12 @@ namespace OpenSA {
             do \
             {\
                 OpenSA::LOG_Location __actual_location {\
-                    .m_filename = strrchr(__FILE__, '/') + 1,\
-                    .m_line = __LINE__\
+                    .mLocal_Filename = strrchr(__FILE__, '/') + 1,\
+                    .mLocal_Line = __LINE__\
                 };\
                 const OpenSA::LOG_Launch_Data __current_log_launch {\
-                    .m_priority = status,\
-                    .m_location = &__actual_location\
+                    .mPriority = status,\
+                    .mLocation = &__actual_location\
                 };\
                 launch_result = logger.Android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
             }\
@@ -92,8 +92,8 @@ namespace OpenSA {
     private:
         ssize_t Android_Produce(LOG_Release_Info* produce_info);
         void Android_Release(const LOG_Release_Info* release_info);
-        /* std::unique_ptr<LOG_Options> m_log_options; */
-        LOG_Options m_log_options;
+        /* std::unique_ptr<LOG_Options> mLog_Options; */
+        LOG_Options mLog_Options;
     };
 
 };

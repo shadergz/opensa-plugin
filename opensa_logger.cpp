@@ -5,41 +5,41 @@
 
 constexpr const char* const LOGD_TAG = "OpenSA";
 
-static OpenSA::LOG_Options gs_default_log;
+static OpenSA::LOG_Options gsDefault_LogConf;
 
 namespace OpenSA {
     OpenSA_Logger::OpenSA_Logger() noexcept {
-        gs_default_log.m_TAG = LOGD_TAG;
+        gsDefault_LogConf.mTAG = LOGD_TAG;
         /* Copy and initialize the default logger options structure data */
-        /* m_log_options = std::make_unique<LOG_Options>(gs_default_log); */
-        m_log_options = gs_default_log;
+        /* mLog_Options = std::make_unique<LOG_Options>(gsDefault_LogConf); */
+        mLog_Options = gsDefault_LogConf;
     }
 
     void OpenSA_Logger::Android_Release(const LOG_Release_Info* release_info) {
-        if (m_log_options.m_use_logcat) {
-            __android_log_write(release_info->m_prior, release_info->m_TAG_name, 
+        if (mLog_Options.mUse_Logcat) {
+            __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
                 release_info->m_output_buffer);
         }
     }
 
     ssize_t OpenSA_Logger::Android_Produce(LOG_Release_Info* produce_info) {
-        switch(produce_info->m_prior) {
+        switch(produce_info->mPriority_Event) {
         default:
         case ANDROID_LOG_UNKNOWN:
         case ANDROID_LOG_DEFAULT:
-        case ANDROID_LOG_VERBOSE: produce_info->m_status_str = "Success"; break;
+        case ANDROID_LOG_VERBOSE: produce_info->mStatus_Str = "Success"; break;
         case ANDROID_LOG_DEBUG:
         case ANDROID_LOG_WARN:
-        case ANDROID_LOG_ERROR: produce_info->m_status_str = "Error"; break;
+        case ANDROID_LOG_ERROR: produce_info->mStatus_Str = "Error"; break;
         case ANDROID_LOG_FATAL:
         case ANDROID_LOG_SILENT:
-        case ANDROID_LOG_INFO: produce_info->m_status_str = "Info"; break;
+        case ANDROID_LOG_INFO: produce_info->mStatus_Str = "Info"; break;
         }
 
         uintptr_t buffer_ptr_location = 0, remain_buffer_sz = 0;
         char* const base_buffer_ptr = produce_info->m_output_buffer;
 
-        const LOG_Location* location = &produce_info->log_local;
+        const LOG_Location* location = &produce_info->mLog_Location;
 
         #define OUTPUT_LOCATION\
             (base_buffer_ptr + buffer_ptr_location)
@@ -55,17 +55,17 @@ namespace OpenSA {
 
         /* (TAG FILE:LINE) <Status> -> MESSAGE */
         
-        if (m_log_options.m_dsp_TAG) {
-            EXPAND_BUFFER("(%s ", m_log_options.m_TAG);
+        if (mLog_Options.mDsp_TAG) {
+            EXPAND_BUFFER("(%s ", mLog_Options.mTAG);
         }
-        if (m_log_options.m_file_status) {
-            EXPAND_BUFFER("%s:%d) ", location->m_filename, location->m_line); 
+        if (mLog_Options.mFile_Status) {
+            EXPAND_BUFFER("%s:%d) ", location->mLocal_Filename, location->mLocal_Line); 
         } else { 
             EXPAND_BUFFER(") "); 
         }
 
-        if (m_log_options.m_dsp_status) {
-            EXPAND_BUFFER("<%s> ", produce_info->m_status_str);
+        if (mLog_Options.mDsp_Status) {
+            EXPAND_BUFFER("<%s> ", produce_info->mStatus_Str);
         }
 
         EXPAND_BUFFER("%s", produce_info->m_format_buffer);
@@ -78,11 +78,11 @@ namespace OpenSA {
         va_start(variable_arguments, format);
 
         LOG_Release_Info stack_based_re = {
-            .m_TAG_name = m_log_options.m_TAG,
-            .m_prior = launch_data->m_priority
+            .mTAG_Name = mLog_Options.mTAG,
+            .mPriority_Event = launch_data->mPriority
         };
 
-        memcpy(&stack_based_re.log_local, launch_data->m_location, sizeof(LOG_Location));
+        memcpy(&stack_based_re.mLog_Location, launch_data->mLocation, sizeof(LOG_Location));
         vsnprintf(stack_based_re.m_format_buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
 
         const auto produce_result = Android_Produce(&stack_based_re);

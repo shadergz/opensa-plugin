@@ -28,16 +28,6 @@ static worker_thread_t main_thread = 0, hook_thread = 0;
 static int gJVM_Status;
 static ssize_t gLog_Result;
 
-static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
-
-struct GTASA_Native_Object : public Native_Object {
-public:
-    GTASA_Native_Object() {}
-    ~GTASA_Native_Object() {}
-    Hook_I32_t native_Notify(Notify_Event_t status, const char* message);
-
-};
-
 Hook_I32_t GTASA_Native_Object::native_Notify(Notify_Event_t status, const char* message) {
     Hook_I32_t result = -1;
     switch(status) {
@@ -48,7 +38,7 @@ Hook_I32_t GTASA_Native_Object::native_Notify(Notify_Event_t status, const char*
     return result;
 }
 
-static GTASA_Native_Object gNative_GTASA_Object;
+static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
 
 /* When game initialize this function will be called by the 
  * JVM from Android Runtime.
@@ -133,14 +123,14 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
     }
 
     /* Searching for the native GTASA library */
-    gNative_GTASA_Object.find_Base_Address("libGTASA.so");
+    gLib_GTASA_Native.find_Base_Address("libGTASA.so");
     /* This is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
 #if defined(_OPENSA_DEBUG_)
     Android_Success(gMAIN_SA_Logger, gLog_Result, "libGTASA.so image base address: %#lx\n", 
-        gNative_GTASA_Object.get_Native_Addr());
+        gLib_GTASA_Native.get_Native_Addr());
 #endif
     /* Starting the Hook thread, this thread will be locked until the VM call the OpenSA_Resume function */
     pthread_create(&hook_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);

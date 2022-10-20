@@ -1,5 +1,5 @@
-#include <opensa_logger.h>
-#include <opensa_objects.h>
+#include "opensa_logger.h"
+#include "opensa_objects.h"
 
 static int gMessageStatus = 0;
 

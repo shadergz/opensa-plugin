@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include <opensa_logger.h>
+#include "opensa_logger.h"
 
 constexpr const char* const LOGD_TAG = "OpenSA";
 

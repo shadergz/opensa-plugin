@@ -4,7 +4,9 @@
 #include <jni.h>
 
 namespace OpenSA {
-    /* Toast message duration */
+    /* Toast message duration 
+     * https://developer.android.com/guide/topics/ui/notifiers/toasts?hl=en
+    */
     enum Toast_Duration { TOAST_SHORT = 0, TOAST_LONG = 1 };
 
     class JVM_Objects {

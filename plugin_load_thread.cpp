@@ -65,7 +65,15 @@ namespace OpenSA_Threads {
     static __attribute__((visibility("hidden"))) void* Plugin_StartMAIN(void* SAVED_PTR) {
         __attribute__((unused)) auto* thread_info = static_cast<Thread_Data*>(SAVED_PTR);
         /* Start the hook thread now, we can continues the execution after his return */
+        
+        /* Fixing wasted wakeups, the mutex must be locked before the signal, and unlocks after the 
+         * signal function call 
+        */
+        pthread_mutex_lock(&gHook_Mutex);
+        
         pthread_cond_signal(&gHook_Cond);
+
+        pthread_mutex_unlock(&gHook_Mutex);
         /* Waiting until the hook thread begin in finished state */
         pthread_join(hook_thread, nullptr);
 

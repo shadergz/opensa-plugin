@@ -4,16 +4,12 @@
 #include <jni.h>
 #include <pthread.h>
 
-#include <hookrt/object.h>
-#include <hookrt/info.h>
+#include "opensa_logger.h"
+#include "opensa_objects.h"
 
-#include <opensa_logger.h>
-#include <opensa_objects.h>
+#include "game/Game_Hooks.h"
 
-#include <sa_config.h>
-
-using namespace hookrt::object;
-using namespace hookrt::info;
+#include "sa_config.h"
 
 OpenSA::OpenSA_Logger gMAIN_SA_Logger;
 OpenSA::JVM_Objects gThread_Objects;
@@ -90,6 +86,8 @@ namespace OpenSA_Threads {
         /* Acquire the lock, Release the lock and wait for the main thread be called */
         pthread_mutex_lock(&gHook_Mutex);
         pthread_cond_wait(&gHook_Cond, &gHook_Mutex);
+
+        OpenSA_Cortex::__Apply_Patch_Level4();
 
         pthread_mutex_unlock(&gHook_Mutex);
         Android_Info(gMAIN_SA_Logger, gLog_Result, "Hook thread has finished\n");

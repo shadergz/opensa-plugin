@@ -25,8 +25,8 @@ namespace OpenSA {
         const android_LogPriority mPriority_Event;
         LOG_Location mLog_Location;
 
-        char m_format_buffer[FORMAT_BUFFER_SZ];
-        char m_output_buffer[FORMAT_OUTPUT_SZ];
+        char mFormat_Buffer[FORMAT_BUFFER_SZ];
+        char mOutput_Buffer[FORMAT_OUTPUT_SZ];
     };
 
     struct LOG_Launch_Data {

@@ -18,7 +18,7 @@ namespace OpenSA {
     void OpenSA_Logger::Android_Release(const LOG_Release_Info* release_info) {
         if (mLog_Options.mUse_Logcat) {
             __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
-                release_info->m_output_buffer);
+                release_info->mOutput_Buffer);
         }
     }
 
@@ -37,7 +37,7 @@ namespace OpenSA {
         }
 
         uintptr_t buffer_ptr_location = 0, remain_buffer_sz = 0;
-        char* const base_buffer_ptr = produce_info->m_output_buffer;
+        char* const base_buffer_ptr = produce_info->mOutput_Buffer;
 
         const LOG_Location* location = &produce_info->mLog_Location;
 
@@ -68,7 +68,7 @@ namespace OpenSA {
             EXPAND_BUFFER("<%s> ", produce_info->mStatus_Str);
         }
 
-        EXPAND_BUFFER("%s", produce_info->m_format_buffer);
+        EXPAND_BUFFER("%s", produce_info->mFormat_Buffer);
         return static_cast<ssize_t>(buffer_ptr_location);
     }
 
@@ -83,7 +83,7 @@ namespace OpenSA {
         };
 
         memcpy(&stack_based_re.mLog_Location, launch_data->mLocation, sizeof(LOG_Location));
-        vsnprintf(stack_based_re.m_format_buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
+        vsnprintf(stack_based_re.mFormat_Buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
 
         const auto produce_result = Android_Produce(&stack_based_re);
 

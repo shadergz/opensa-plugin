@@ -1,0 +1,3 @@
+[submodule "lib/hookRuntimeA64"]
+	path = lib/hookRuntimeA64
+	url = git@github.com:beloncode/hookRuntimeA64.git

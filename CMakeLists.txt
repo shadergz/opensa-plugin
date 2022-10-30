@@ -11,7 +11,7 @@ endif()
 
 configure_file(sa_config.h.in sa_config.h)
 
-add_subdirectory(lib/hookrta64)
+add_subdirectory(lib/hookRuntimeA64)
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(OpenSA SHARED plugin_load_thread.cpp 
@@ -20,5 +20,5 @@ add_library(OpenSA SHARED plugin_load_thread.cpp
     game/Game_Context.cpp 
     game/Hooks_Cortex.cpp
     game/MainMenu_Hooks.cpp)
-target_link_libraries(OpenSA hookrta64 log)
+target_link_libraries(OpenSA hookRuntimeA64 log)
 

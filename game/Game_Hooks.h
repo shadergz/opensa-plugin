@@ -3,17 +3,17 @@
 
 #include <cassert>
 
-#include <hookrt/object.h>
-#include <hookrt/info.h>
+#include <hookRuntime/ObjectNativeInfo.h>
+#include <hookRuntime/LogicalObject.h>
 
-using namespace hookrt::object;
-using namespace hookrt::info;
+using namespace hookRuntime::LogicalObject;
+using namespace hookRuntime::ObjectInfo;
 
 struct GTASA_Native_Object : public Native_Object {
 public:
     GTASA_Native_Object() {}
     ~GTASA_Native_Object() {}
-    Hook_I32_t native_Notify(Notify_Event_t status, const char* message);
+    Hook_I32_t event_Release(Hook_Event_t status, const char* message);
 
 };
 

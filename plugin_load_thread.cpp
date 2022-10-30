@@ -24,7 +24,7 @@ static worker_thread_t main_thread = 0, hook_thread = 0;
 static int gJVM_Status;
 static ssize_t gLog_Result;
 
-Hook_I32_t GTASA_Native_Object::native_Notify(Notify_Event_t status, const char* message) {
+Hook_I32_t GTASA_Native_Object::event_Release(Hook_Event_t status, const char* message) {
     Hook_I32_t result = -1;
     switch(status) {
     case HOOK_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;

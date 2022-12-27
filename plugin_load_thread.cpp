@@ -9,7 +9,7 @@
 
 #include "game/Game_Hooks.h"
 
-#include "sa_config.h"
+#include "SA_Config.h"
 
 OpenSA::OpenSA_Logger gMAIN_SA_Logger;
 OpenSA::JVM_Objects gThread_Objects;

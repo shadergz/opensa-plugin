@@ -9,9 +9,9 @@ if (${OPENSA_DEBUG} EQUAL True)
     set(HOOK_RT_DEBUG True)
 endif()
 
-configure_file(sa_config.h.in sa_config.h)
+configure_file(SA_Config.h.in SA_Config.h)
 
-add_subdirectory(lib/hookRuntimeA64)
+add_subdirectory(lib/BL-RuntimeA64v8a)
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 add_library(OpenSA SHARED)
@@ -22,4 +22,4 @@ target_sources(OpenSA PRIVATE plugin_load_thread.cpp
     game/Hooks_Cortex.cpp
     game/MainMenu_Hooks.cpp)
 
-target_link_libraries(OpenSA hookRuntimeA64 log)
+target_link_libraries(OpenSA blrta64 log)

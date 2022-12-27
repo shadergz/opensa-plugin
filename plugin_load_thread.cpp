@@ -134,7 +134,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
-#if defined(_OPENSA_DEBUG_)
+#if defined(OPENSA_DEBUG)
     Android_Success(gMAIN_SA_Logger, gLog_Result, "libGTASA.so image base address: %#lx\n", 
         gLib_GTASA_Native.get_Native_Addr());
 #endif

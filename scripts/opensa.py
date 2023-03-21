@@ -29,7 +29,7 @@ executeDir = os.path.basename(os.getcwd())
 if executeDir != rootDir:
     print('Executing out of project root (%s directory), this will lead to some errors' % rootDir)
 
-cmakeBuildCommand = cmakePath + ' -DCMAKE_BUILD_TYPE=' +  buildType[debug] + ' -DCMAKE_TOOLCHAIN_FILE=' + toolchain +\
+cmakeBuildCommand = cmakePath + ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=' +  buildType[debug] + ' -DCMAKE_TOOLCHAIN_FILE=' + toolchain +\
     ' -DANDROID_ABI=arm64-v8a -DANDROID_NDK=' + ndkPath + ' -DANDROID_PLATFORM=android-29 -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a'\
     ' -DANDROID_STL=c++_shared -DCMAKE_MAKE_PROGRAM=' + ninjaPath + ' -DCMAKE_SYSTEM_NAME=Android -DCMAKE_SYSTEM_VERSION=29 -GNinja ..'
 

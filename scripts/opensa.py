@@ -13,6 +13,11 @@ buildDir = 'build'
 ndkPath = os.getenv('NDK_PATH')
 cmakeDirPath = os.getenv('ANDROID_CMAKE')
 
+if ndkPath == '':
+    print('NDK_PATH not configured')
+if cmakeDirPath == '':
+    print('ANDROID_CMAKE does not exist inside your system paths!')
+
 cmakePath = os.path.join(cmakeDirPath, 'bin', 'cmake')
 ninjaPath = os.path.join(cmakeDirPath, 'bin', 'ninja')
 
@@ -20,9 +25,6 @@ toolchain = ndkPath + '/build/cmake/android.toolchain.cmake'
 
 buildType = ['Release', 'Debug']
 debug=0
-
-if ndkPath == '':
-    print('NDK_PATH not configured')
 
 executeDir = os.path.basename(os.getcwd())
 

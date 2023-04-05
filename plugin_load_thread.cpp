@@ -27,9 +27,9 @@ static ssize_t gLog_Result;
 Hook_I32_t GTASA_Native_Object::event_Release(Hook_Event_t status, const char* message) {
     Hook_I32_t result = -1;
     switch(status) {
-    case HOOK_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;
-    case HOOK_INFO: Android_Info(gMAIN_SA_Logger, result, message); break;
-    case HOOK_FAILED: Android_Error(gMAIN_SA_Logger, result, message); break;
+    case HOOK_EVENT_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;
+    case HOOK_EVENT_INFO:    Android_Info(gMAIN_SA_Logger, result, message);    break;
+    case HOOK_EVENT_FAILED:  Android_Error(gMAIN_SA_Logger, result, message);   break;
     }
     return result;
 }
@@ -115,12 +115,12 @@ extern "C" JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_1Res
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
 
     Android_Info(gMAIN_SA_Logger, gLog_Result, 
-        "OpenSA loaded into heap! and was hooked by Android Runtime! " 
+        "OpenSA loaded into heap! and has hooked by the Android Runtime! " 
         "Compiled at: %s:%s\n", __DATE__, __TIME__);
     
     gJVM_Status = vm->GetEnv(reinterpret_cast<void**>(&gMAIN_Env), JNI_VERSION_1_6);
     if (gJVM_Status < 0) {
-        Android_Error(gMAIN_SA_Logger, gLog_Result, "Failed to get the JNI env from the main process, assuming native thread\n");
+        Android_Error(gMAIN_SA_Logger, gLog_Result, "Failed to get the JNI env from the main process, assuming a native thread\n");
         gJVM_Status = vm->AttachCurrentThread(&gMAIN_Env, nullptr);
         if (gJVM_Status < 0) {
             Android_Error(gMAIN_SA_Logger, gLog_Result, "For some reason, your device can't attach the current thread to JNI env\n");

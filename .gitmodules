@@ -1,3 +1,6 @@
-[submodule "lib/BL-RuntimeA64v8a"]
-	path = lib/BL-RuntimeA64v8a
-	url = https://github.com/beloncode/BL-RuntimeA64v8a.git
+[submodule "vendor/bra64rt"]
+	path = vendor/bra64rt
+	url = https://github.com/beloncode/bra64rt.git
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui.git

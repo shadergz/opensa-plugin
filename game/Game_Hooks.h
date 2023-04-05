@@ -3,10 +3,10 @@
 
 #include <cassert>
 
-#include <blrta64/object_native_info.h>
-#include <blrta64/logical_object.h>
+#include <bra64rt/object_native_info.h>
+#include <bra64rt/runtime_object.h>
 
-using namespace RuntimeHook::LogicalObject;
+using namespace RuntimeHook::RuntimeObject;
 using namespace RuntimeHook::ObjectInfo;
 
 struct GTASA_Native_Object : public Native_Object {

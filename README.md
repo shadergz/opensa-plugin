@@ -1,6 +1,6 @@
 # OpenSA
 
-**This project aims to perform _Gaming Hacking_ techniques for achievement some objectives, all modifications is only for studies purposes!**
+**This project aims to perform _Gaming Hacking_ techniques for achievement some objectives, all modifications is only for studies purposes and just works on ARMv8a-64 devices!**
 
 ## Tooling in use
 - Cmake
@@ -38,7 +38,7 @@ OpenSA> cd build
 build> ninja install
 ~~~
 
-After this, a shared object file called **libOpenSA.so** must be generated, this is own plugin and you mst install inside your Android Package game object in ```lib/arm64-v8a/libOpenSA.so```. The same **.APK** object must be infected by our dalvik smali script, all you need is this file inside of: ```OpenSA/smali/GTASA.smali```
+After this, a shared object file called **libOpenSA.so** must be generated, this is own plugin and you mst install inside your Android Package game object in ```lib/arm64-v8a/libOpenSA.so```. The same **.APK** object must be infected by our Dalvik Smali script, all you need is this file inside of: ```OpenSA/smali/GTASA.smali```
 
 > All others libraries needed will be inside of `output` directory at the project root structure
 

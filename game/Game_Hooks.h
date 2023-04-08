@@ -13,7 +13,7 @@ struct GTASA_Native_Object : public Native_Object {
 public:
     GTASA_Native_Object() {}
     ~GTASA_Native_Object() {}
-    Hook_I32_t event_Release(Hook_Event_t status, const char* message);
+    Hook_I32_t hookMessage_Release(Hook_Event_t status, const char* message);
 
 };
 

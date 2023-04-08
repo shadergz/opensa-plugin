@@ -24,7 +24,7 @@ static worker_thread_t main_thread = 0, hook_thread = 0;
 static int gJVM_Status;
 static ssize_t gLog_Result;
 
-Hook_I32_t GTASA_Native_Object::event_Release(Hook_Event_t status, const char* message) {
+Hook_I32_t GTASA_Native_Object::hookMessage_Release(Hook_Event_t status, const char* message) {
     Hook_I32_t result = -1;
     switch(status) {
     case HOOK_EVENT_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;
@@ -129,7 +129,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
     }
 
     /* Searching for the native GTASA library */
-    gLib_GTASA_Native.find_Base_Address("libGTASA.so");
+    gLib_GTASA_Native.find_Base_Address(GTASA_NATIVE_OBJECT);
     /* This is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.

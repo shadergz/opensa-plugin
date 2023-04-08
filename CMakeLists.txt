@@ -26,7 +26,9 @@ target_sources(OpenSA PRIVATE
     Virtual_ENV.cpp
     game/Game_Context.cpp 
     game/Hooks_Cortex.cpp
-    game/MainMenu_Hooks.cpp)
+    game/MainMenu_Hooks.cpp
+    Address_Map.cpp
+    )
 
 target_link_libraries(OpenSA bra64rt log)
 

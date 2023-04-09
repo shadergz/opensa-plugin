@@ -1,4 +1,4 @@
 #include "Address_Map.h"
 
-uintptr_t gAddrMap_IO_extstorage_path;
+const char* gAddrMap_IO_extstorage_path;
 

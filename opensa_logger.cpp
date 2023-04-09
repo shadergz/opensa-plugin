@@ -36,7 +36,7 @@ namespace OpenSA {
         case ANDROID_LOG_INFO: produce_info->mStatus_Str = "Info"; break;
         }
 
-        uintptr_t buffer_ptr_location = 0, remain_buffer_sz = 0;
+        uint_fast64_t buffer_ptr_location = 0, remain_buffer_sz = 0;
         char* const base_buffer_ptr = produce_info->mOutput_Buffer;
 
         const LOG_Location* location = &produce_info->mLog_Location;

@@ -78,10 +78,10 @@ namespace OpenSA_Threads {
         pthread_join(hook_thread, nullptr);
 
         static const struct timespec sleep_nano = {
-            .tv_sec = 4,
+            .tv_sec = 6,
         };
         while (true) {
-            Android_Info(gMAIN_SA_Logger, gLog_Result, "Inside MAIN\n");
+            Android_Info(gMAIN_SA_Logger, gLog_Result, "Inside MAIN loop\n");
             nanosleep(&sleep_nano, nullptr);
         }
 

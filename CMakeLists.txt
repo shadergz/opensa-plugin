@@ -28,6 +28,7 @@ target_sources(OpenSA PRIVATE
     game/Hooks_Cortex.cpp
     game/MainMenu_Hooks.cpp
     Address_Map.cpp
+    SADIR_logfile.cpp
     )
 
 target_link_libraries(OpenSA bra64rt log)

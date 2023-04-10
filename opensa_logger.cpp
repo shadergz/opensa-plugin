@@ -15,6 +15,22 @@ namespace OpenSA {
         mLog_Options = gsDefault_LogConf;
     }
 
+    OpenSA_Logger::~OpenSA_Logger() {
+        const auto finalTime = std::chrono::system_clock::now();
+        const auto timeTData = std::chrono::system_clock::to_time_t(finalTime);
+
+        if (m_Log_File != nullptr) {
+            fprintf(m_Log_File, 
+                "OpenSA has been closed!\n"
+                "Log file end time: %s\n",
+                
+                std::ctime(&timeTData));
+
+            fclose(m_Log_File);
+
+        }
+    }
+
     void OpenSA_Logger::Android_Release(const LOG_Release_Info* release_info) {
         if (mLog_Options.mUse_Logcat) {
             __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
@@ -27,13 +43,16 @@ namespace OpenSA {
         default:
         case ANDROID_LOG_UNKNOWN:
         case ANDROID_LOG_DEFAULT:
-        case ANDROID_LOG_VERBOSE: produce_info->mStatus_Str = "Success"; break;
+        case ANDROID_LOG_VERBOSE: 
+            produce_info->mStatus_Str = "Success"; break;
         case ANDROID_LOG_DEBUG:
         case ANDROID_LOG_WARN:
-        case ANDROID_LOG_ERROR: produce_info->mStatus_Str = "Error"; break;
+        case ANDROID_LOG_ERROR: 
+            produce_info->mStatus_Str = "Error";   break;
         case ANDROID_LOG_FATAL:
         case ANDROID_LOG_SILENT:
-        case ANDROID_LOG_INFO: produce_info->mStatus_Str = "Info"; break;
+        case ANDROID_LOG_INFO: 
+            produce_info->mStatus_Str = "Info";    break;
         }
 
         uint_fast64_t buffer_ptr_location = 0, remain_buffer_sz = 0;
@@ -86,11 +105,8 @@ namespace OpenSA {
         vsnprintf(stack_based_re.mFormat_Buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
 
         const auto produce_result = Android_Produce(&stack_based_re);
-
         Android_Release(&stack_based_re);
-
         va_end(variable_arguments);
-
         return produce_result;
     }
 

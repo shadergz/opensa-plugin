@@ -4,8 +4,12 @@
 #include <android/log.h>
 
 #include <cstring>
+#include <cstdio>
 #include <cstdarg>
 #include <cstdint>
+
+#include <chrono>
+#include <string_view>
 
 namespace OpenSA {
     constexpr short FORMAT_BUFFER_SZ = 0x13f;
@@ -62,7 +66,7 @@ namespace OpenSA {
         OpenSA_Logger(int opened_fd, const char* log_filename = nullptr);
         */
         OpenSA_Logger() noexcept;
-        ~OpenSA_Logger() = default;
+        ~OpenSA_Logger();
 
         #define Android_Logger_DO(logger, launch_result, status, format, ...)\
             do \
@@ -89,11 +93,18 @@ namespace OpenSA {
         ssize_t Android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...);
         void configure_user_output(int opened_fd, const char* opt_filename = nullptr);
 
+        bool setups_logFile(const std::string_view fullPath, const std::string_view logFilename);
+
     private:
         ssize_t Android_Produce(LOG_Release_Info* produce_info);
         void Android_Release(const LOG_Release_Info* release_info);
+
+        bool write_logHeader();
         /* std::unique_ptr<LOG_Options> mLog_Options; */
         LOG_Options mLog_Options;
+
+        FILE* m_Log_File = {};
+        std::chrono::time_point<std::chrono::system_clock> m_openDate = {};
     };
 
 };

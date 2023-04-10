@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <sys/file.h>
+
 #include "opensa_logger.h"
 
 constexpr const char* const LOGD_TAG = "OpenSA";
@@ -26,9 +28,9 @@ namespace OpenSA {
                 
                 std::ctime(&timeTData));
 
-            // Now any other process can finnal read all the logs!
+            // Now any other process can read all the logs!
             fflush(m_Log_File);
-            // flock(m_Log_File, LOCK_UN);
+            flock(fileno(m_Log_File), LOCK_UN);
 
             fclose(m_Log_File);
         }
@@ -40,8 +42,11 @@ namespace OpenSA {
                 release_info->mOutput_Buffer);
         }
 
-        if (m_Log_File != NULL)
+        if (m_Log_File != nullptr) {
             fputs(release_info->mOutput_Buffer, m_Log_File);
+            fflush(m_Log_File);
+        }
+
     }
 
     ssize_t OpenSA_Logger::Android_Produce(LOG_Release_Info* produce_info) {

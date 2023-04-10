@@ -3,6 +3,8 @@
 #include <ctime>
 #include <clocale>
 
+#include <sys/file.h>
+
 #include "opensa_logger.h"
 #include "opensa_objects.h"
 #include "Address_Map.h"
@@ -71,7 +73,7 @@ namespace OpenSA {
             return false;
         }
 
-        //flock(m_Log_File, LOCK_EX);
+        flock(fileno(m_Log_File), LOCK_EX);
         m_openDate = std::chrono::system_clock::now();
 
         free(fullPLLog);

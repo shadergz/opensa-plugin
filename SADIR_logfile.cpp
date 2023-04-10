@@ -4,11 +4,8 @@
 #include <clocale>
 
 #include "opensa_logger.h"
-
 #include "opensa_objects.h"
-
 #include "Address_Map.h"
-
 #include "game/Game_Hooks.h"
 
 static int32_t logRet = 0;
@@ -29,7 +26,7 @@ namespace OpenSA {
         if (isNew) {
             fprintf(m_Log_File, 
                 "OPENSA LOG (Client v0.0.4)\n"
-                "Full Storage Path: %s\n (Read/Write Access)"
+                "Full Storage Path: %s (Read/Write Access)\n"
                 "Log file created at: %s\n",
 
                 gAddrMap_IO_extstorage_path,
@@ -41,6 +38,8 @@ namespace OpenSA {
 
         fprintf(m_Log_File, "Current libGTASA.so base ptr: %p\n\n", 
             reinterpret_cast<void*>(gLib_GTASA_Native.get_Native_Addr()));
+        
+        fflush(m_Log_File);
 
         return true;
     }
@@ -49,30 +48,33 @@ namespace OpenSA {
         const std::string_view fullPath, 
         const std::string_view logFilename) {
 
-        char** fullPLLog[1] = {};
-        asprintf(fullPLLog[0], "%s/%s", fullPath.data(), logFilename.data());
+        char* fullPLLog = nullptr;
+        asprintf(&fullPLLog, "%s%s", 
+            fullPath.data(), 
+            logFilename.data());
         
-        if (fullPLLog[0] == NULL) {
+        if (fullPLLog == nullptr) {
             Android_Error(gMAIN_SA_Logger, logRet, "Can't allocate the desired log file full pathname!\n");
             std::terminate();
         }
 
-        Android_Info(gMAIN_SA_Logger, logRet, "Will open a new Log file in %s\n", fullPLLog[0]);
+        Android_Info(gMAIN_SA_Logger, logRet, "Will open a new Log file in %s\n", fullPLLog);
 
-        m_Log_File = fopen(*fullPLLog[0], "w+");
+        m_Log_File = fopen(fullPLLog, "a");
 
         if (!m_Log_File) {
             Android_Error(gMAIN_SA_Logger, logRet, "Couldn't open the new log file because of %s\n", 
                 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/uselocale.html
                 strerror_l(errno, uselocale(static_cast<locale_t>(0))));
             
-            free(*fullPLLog[0]);
+            free(fullPLLog);
             return false;
         }
 
+        //flock(m_Log_File, LOCK_EX);
         m_openDate = std::chrono::system_clock::now();
 
-        free(*fullPLLog[0]);
+        free(fullPLLog);
         return write_logHeader();
     }
 }

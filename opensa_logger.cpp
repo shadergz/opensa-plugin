@@ -26,8 +26,11 @@ namespace OpenSA {
                 
                 std::ctime(&timeTData));
 
-            fclose(m_Log_File);
+            // Now any other process can finnal read all the logs!
+            fflush(m_Log_File);
+            // flock(m_Log_File, LOCK_UN);
 
+            fclose(m_Log_File);
         }
     }
 
@@ -36,6 +39,9 @@ namespace OpenSA {
             __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
                 release_info->mOutput_Buffer);
         }
+
+        if (m_Log_File != NULL)
+            fputs(release_info->mOutput_Buffer, m_Log_File);
     }
 
     ssize_t OpenSA_Logger::Android_Produce(LOG_Release_Info* produce_info) {
@@ -47,9 +53,9 @@ namespace OpenSA {
             produce_info->mStatus_Str = "Success"; break;
         case ANDROID_LOG_DEBUG:
         case ANDROID_LOG_WARN:
-        case ANDROID_LOG_ERROR: 
-            produce_info->mStatus_Str = "Error";   break;
+        case ANDROID_LOG_ERROR:
         case ANDROID_LOG_FATAL:
+            produce_info->mStatus_Str = "Error";   break;
         case ANDROID_LOG_SILENT:
         case ANDROID_LOG_INFO: 
             produce_info->mStatus_Str = "Info";    break;

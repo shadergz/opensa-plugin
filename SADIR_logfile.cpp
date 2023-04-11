@@ -27,8 +27,8 @@ namespace OpenSA {
 
         if (isNew) {
             fprintf(m_Log_File, 
-                "OPENSA LOG (Client v0.0.4)\n"
-                "Full Storage Path: %s (Read/Write Access)\n"
+                "OPENSA LOG (CLIENT V0.0.4)\n"
+                "Full Storage Path: \'%s\' (Read/Write Access)\n"
                 "Log file created at: %s\n",
 
                 gAddrMap_IO_extstorage_path,
@@ -38,7 +38,7 @@ namespace OpenSA {
         if (!isNew)
             fprintf(m_Log_File, "Log file reopened to write at: %s\n", dateAndHour);
 
-        fprintf(m_Log_File, "Current libGTASA.so base ptr: %p\n\n", 
+        fprintf(m_Log_File, "Current libGTASA.so base ptr: %p\n", 
             reinterpret_cast<void*>(gLib_GTASA_Native.get_Native_Addr()));
         
         fflush(m_Log_File);

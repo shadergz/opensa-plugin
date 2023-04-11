@@ -16,7 +16,7 @@ namespace OpenSA_Cortex {
         gAddrMap_IO_extstorage_path = gLib_GTASA_Native.make_Object<const char*>(Address_IO_A64::STORAGE_PATH_BASE_ADDR);
 
         // Should be something like: /storage/emulated/0/...
-        Android_Info(gMAIN_SA_Logger, gLaunch_Ret, "<HOOK> Android Storage Path found %s\n", gAddrMap_IO_extstorage_path);
+        Android_Info(gMAIN_SA_Logger, gLaunch_Ret, "<HOOK> Android Storage Path found: '%s'\n", gAddrMap_IO_extstorage_path);
         gMAIN_SA_Logger.setups_logFile(gAddrMap_IO_extstorage_path, "OpenSA/LogSA.txt");
     }
 

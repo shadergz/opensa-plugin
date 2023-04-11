@@ -36,15 +36,23 @@ namespace OpenSA {
         }
     }
 
-    void OpenSA_Logger::Android_Release(const LOG_Release_Info* release_info) {
-        if (mLog_Options.mUse_Logcat) {
-            __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
-                release_info->mOutput_Buffer);
+    void OpenSA_Logger::Android_Release(LOG_Release_Info* release_info) {
+        if (m_Log_File != nullptr) {
+            const char* cMessage = strchr(release_info->mOutput_Buffer, ')');
+            if (!cMessage) return;
+            else cMessage++;
+
+            fputs(cMessage, m_Log_File);
+            fflush(m_Log_File);
         }
 
-        if (m_Log_File != nullptr) {
-            fputs(release_info->mOutput_Buffer, m_Log_File);
-            fflush(m_Log_File);
+        if (mLog_Options.mUse_Logcat) {
+            char* unusedTag = strchr(release_info->mOutput_Buffer, '=') - 1;
+            char* logMessage = strchr(release_info->mOutput_Buffer, '>') + 1;
+
+            memmove(unusedTag, logMessage, strlen(logMessage) + 1);
+            __android_log_write(release_info->mPriority_Event, release_info->mTAG_Name, 
+                release_info->mOutput_Buffer);
         }
 
     }
@@ -66,40 +74,42 @@ namespace OpenSA {
             produce_info->mStatus_Str = "Info";    break;
         }
 
-        uint_fast64_t buffer_ptr_location = 0, remain_buffer_sz = 0;
+        uint_fast64_t bfPointer = 0, remain_buffer_sz = 0;
         char* const base_buffer_ptr = produce_info->mOutput_Buffer;
 
         const LOG_Location* location = &produce_info->mLog_Location;
 
         #define OUTPUT_LOCATION\
-            (base_buffer_ptr + buffer_ptr_location)
+            (base_buffer_ptr + bfPointer)
         
         #define REMAIN_SIZE\
-            (FORMAT_OUTPUT_SZ - buffer_ptr_location)
+            (FORMAT_OUTPUT_SZ - bfPointer)
         
         #define INC_BUFFER(size)\
-            (buffer_ptr_location += size)
+            (bfPointer += size)
         
         #define EXPAND_BUFFER(message, ...)\
             INC_BUFFER(snprintf(OUTPUT_LOCATION, REMAIN_SIZE, message, ##__VA_ARGS__))
 
-        /* (TAG FILE:LINE) <Status> -> MESSAGE */
-        
+        /* (Tag File:Line) :Status: Message */
         if (mLog_Options.mDsp_TAG) {
             EXPAND_BUFFER("(%s ", mLog_Options.mTAG);
         }
         if (mLog_Options.mFile_Status) {
             EXPAND_BUFFER("%s:%d) ", location->mLocal_Filename, location->mLocal_Line); 
         } else { 
-            EXPAND_BUFFER(") "); 
+            EXPAND_BUFFER(") ");
         }
 
         if (mLog_Options.mDsp_Status) {
-            EXPAND_BUFFER("<%s> ", produce_info->mStatus_Str);
+            // 0 -> 99999
+            static uint msgCount = 0;
+            EXPAND_BUFFER("=%s %5d= > ", produce_info->mStatus_Str, msgCount);
+            if (msgCount++ == 99999) msgCount = 0;
         }
 
         EXPAND_BUFFER("%s", produce_info->mFormat_Buffer);
-        return static_cast<ssize_t>(buffer_ptr_location);
+        return static_cast<ssize_t>(bfPointer);
     }
 
     ssize_t OpenSA_Logger::Android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...) {
@@ -107,16 +117,16 @@ namespace OpenSA {
 
         va_start(variable_arguments, format);
 
-        LOG_Release_Info stack_based_re = {
+        LOG_Release_Info loginfo = {
             .mTAG_Name = mLog_Options.mTAG,
             .mPriority_Event = launch_data->mPriority
         };
 
-        memcpy(&stack_based_re.mLog_Location, launch_data->mLocation, sizeof(LOG_Location));
-        vsnprintf(stack_based_re.mFormat_Buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
+        memcpy(&loginfo.mLog_Location, launch_data->mLocation, sizeof(LOG_Location));
+        vsnprintf(loginfo.mFormat_Buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
 
-        const auto produce_result = Android_Produce(&stack_based_re);
-        Android_Release(&stack_based_re);
+        const auto produce_result = Android_Produce(&loginfo);
+        Android_Release(&loginfo);
         va_end(variable_arguments);
         return produce_result;
     }

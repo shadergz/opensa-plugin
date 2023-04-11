@@ -97,7 +97,7 @@ namespace OpenSA {
 
     private:
         ssize_t Android_Produce(LOG_Release_Info* produce_info);
-        void Android_Release(const LOG_Release_Info* release_info);
+        void Android_Release(LOG_Release_Info* release_info);
 
         bool write_logHeader();
         /* std::unique_ptr<LOG_Options> mLog_Options; */

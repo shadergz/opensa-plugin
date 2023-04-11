@@ -47,7 +47,7 @@ namespace OpenSA {
         }
 
         if (mLog_Options.mUse_Logcat) {
-            char* unusedTag = strchr(release_info->mOutput_Buffer, '=') - 1;
+            char* unusedTag = strchr(release_info->mOutput_Buffer,  '=') - 1;
             char* logMessage = strchr(release_info->mOutput_Buffer, '>') + 1;
 
             memmove(unusedTag, logMessage, strlen(logMessage) + 1);
@@ -91,21 +91,21 @@ namespace OpenSA {
         #define EXPAND_BUFFER(message, ...)\
             INC_BUFFER(snprintf(OUTPUT_LOCATION, REMAIN_SIZE, message, ##__VA_ARGS__))
 
-        /* (Tag File:Line) :Status: Message */
-        if (mLog_Options.mDsp_TAG) {
+        /* (Tag File:Line) =Status 99999= > Message */
+        if (mLog_Options.mDsp_TAG)
             EXPAND_BUFFER("(%s ", mLog_Options.mTAG);
-        }
-        if (mLog_Options.mFile_Status) {
+        
+        if (mLog_Options.mFile_Status)
             EXPAND_BUFFER("%s:%d) ", location->mLocal_Filename, location->mLocal_Line); 
-        } else { 
+        else
             EXPAND_BUFFER(") ");
-        }
 
         if (mLog_Options.mDsp_Status) {
             // 0 -> 99999
             static uint msgCount = 0;
             EXPAND_BUFFER("=%s %5d= > ", produce_info->mStatus_Str, msgCount);
-            if (msgCount++ == 99999) msgCount = 0;
+            if (msgCount++ >= 99999)
+                msgCount = 0;
         }
 
         EXPAND_BUFFER("%s", produce_info->mFormat_Buffer);

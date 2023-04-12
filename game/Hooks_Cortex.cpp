@@ -13,11 +13,14 @@ namespace OpenSA_Cortex {
     void __Apply_Patch_Level4() {
         Android_Info(gMAIN_SA_Logger, gLaunch_Ret, "Applying patches level (4) inside thread %ld\n", pthread_self());
 
-        gAddrMap_IO_extstorage_path = gLib_GTASA_Native.make_Object<const char*>(Address_IO_A64::STORAGE_PATH_BASE_ADDR);
+        Address_IO_A64::gExtStorage_path = 
+            gGTASA_SO.make_Object<const char*>(Address_IO_A64::STORAGE_PATH_BASE_ADDR);
 
         // Should be something like: /storage/emulated/0/...
-        Android_Info(gMAIN_SA_Logger, gLaunch_Ret, "<HOOK> Android Storage Path found: '%s'\n", gAddrMap_IO_extstorage_path);
-        gMAIN_SA_Logger.setups_logFile(gAddrMap_IO_extstorage_path, "OpenSA/LogSA.txt");
+        Android_Info(gMAIN_SA_Logger, gLaunch_Ret, "<HOOK> Android Storage Path found: (%s)\n", 
+            Address_IO_A64::gExtStorage_path);
+        gMAIN_SA_Logger.setups_logFile(Address_IO_A64::gExtStorage_path, 
+            "OpenSA/LogSA.txt");
     }
 
 }

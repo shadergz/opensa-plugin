@@ -129,14 +129,14 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
     }
 
     /* Searching for the native GTASA library */
-    gLib_GTASA_Native.find_Base_Address(GTASA_NATIVE_OBJECT);
+    gGTASA_SO.find_Base_Address(GTASA_NATIVE_OBJECT);
     /* This is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
 #if defined(OPENSA_DEBUG)
     Android_Success(gMAIN_SA_Logger, gLog_Result, "libGTASA.so image base address: %#lx\n", 
-        gLib_GTASA_Native.get_Native_Addr());
+        gGTASA_SO.get_Native_Addr());
 #endif
     /* Starting the Hook thread, this thread will be locked until the VM call the OpenSA_Resume function */
     pthread_create(&hook_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);

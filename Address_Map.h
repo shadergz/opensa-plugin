@@ -3,9 +3,8 @@
 
 #include <cstdint>
 
-extern const char* gAddrMap_IO_extstorage_path;
-
 namespace Address_IO_A64 {
+    extern const char* gExtStorage_path;
 
     enum {
         // Reference name: StorageBaseRootBuffer

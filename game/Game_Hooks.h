@@ -17,7 +17,7 @@ public:
 
 };
 
-extern GTASA_Native_Object gLib_GTASA_Native;
+extern GTASA_Native_Object gGTASA_SO;
 
 /* Game Main Menu class 
  * This class will be used for hooking the in game main menu,

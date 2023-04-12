@@ -16,32 +16,32 @@ namespace OpenSA {
 
     bool OpenSA_Logger::write_logHeader() {
 
-        const auto openDate = std::chrono::system_clock::to_time_t(m_openDate);
-        struct tm timeDate[1];
+        const auto openDate = std::chrono::system_clock::to_time_t(mOpenDate);
+        struct tm timeDate[1] = {};
         localtime_r(&openDate, &timeDate[0]);
 
-        const bool isNew = ftell(m_Log_File) == 0;
+        const bool isNew = ftell(mLogFile) == 0;
         constexpr uint16_t DATE_AND_HOUR_BSZ = 0x100;
         char dateAndHour[DATE_AND_HOUR_BSZ];
         strftime(dateAndHour, sizeof dateAndHour, "%c", &timeDate[0]);
 
         if (isNew) {
-            fprintf(m_Log_File, 
+            fprintf(mLogFile, 
                 "OPENSA LOG (CLIENT V0.0.4)\n"
-                "Full Storage Path: \'%s\' (Read/Write Access)\n"
+                "Full Storage Path: [%s] (Read/Write Access)\n"
                 "Log file created at: %s\n",
 
-                gAddrMap_IO_extstorage_path,
+                Address_IO_A64::gExtStorage_path,
                 dateAndHour);
         }
 
         if (!isNew)
-            fprintf(m_Log_File, "Log file reopened to write at: %s\n", dateAndHour);
+            fprintf(mLogFile, "Log file reopened to write at: %s\n", dateAndHour);
 
-        fprintf(m_Log_File, "Current libGTASA.so base ptr: %p\n", 
-            reinterpret_cast<void*>(gLib_GTASA_Native.get_Native_Addr()));
+        fprintf(mLogFile, "Current libGTASA.so base ptr: %p\n", 
+            reinterpret_cast<void*>(gGTASA_SO.get_Native_Addr()));
         
-        fflush(m_Log_File);
+        fflush(mLogFile);
 
         return true;
     }
@@ -62,9 +62,9 @@ namespace OpenSA {
 
         Android_Info(gMAIN_SA_Logger, logRet, "Will open a new Log file in %s\n", fullPLLog);
 
-        m_Log_File = fopen(fullPLLog, "a");
+        mLogFile = fopen(fullPLLog, "a");
 
-        if (!m_Log_File) {
+        if (!mLogFile) {
             Android_Error(gMAIN_SA_Logger, logRet, "Couldn't open the new log file because of %s\n", 
                 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/uselocale.html
                 strerror_l(errno, uselocale(static_cast<locale_t>(0))));
@@ -73,10 +73,12 @@ namespace OpenSA {
             return false;
         }
 
-        flock(fileno(m_Log_File), LOCK_EX);
-        m_openDate = std::chrono::system_clock::now();
+        flock(fileno(mLogFile), LOCK_EX);
+        mOpenDate = std::chrono::system_clock::now();
 
         free(fullPLLog);
-        return write_logHeader();
+        const auto bWrote = write_logHeader();
+
+        return mLogFile && bWrote;
     }
 }

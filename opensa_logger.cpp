@@ -21,29 +21,29 @@ namespace OpenSA {
         const auto finalTime = std::chrono::system_clock::now();
         const auto timeTData = std::chrono::system_clock::to_time_t(finalTime);
 
-        if (m_Log_File != nullptr) {
-            fprintf(m_Log_File, 
+        if (mLogFile != nullptr) {
+            fprintf(mLogFile, 
                 "OpenSA has been closed!\n"
                 "Log file end time: %s\n",
                 
                 std::ctime(&timeTData));
 
             // Now any other process can read all the logs!
-            fflush(m_Log_File);
-            flock(fileno(m_Log_File), LOCK_UN);
+            fflush(mLogFile);
+            flock(fileno(mLogFile), LOCK_UN);
 
-            fclose(m_Log_File);
+            fclose(mLogFile);
         }
     }
 
     void OpenSA_Logger::Android_Release(LOG_Release_Info* release_info) {
-        if (m_Log_File != nullptr) {
+        if (mLogFile != nullptr) {
             const char* cMessage = strchr(release_info->mOutput_Buffer, ')');
             if (!cMessage) return;
             else cMessage++;
 
-            fputs(cMessage, m_Log_File);
-            fflush(m_Log_File);
+            fputs(cMessage, mLogFile);
+            fflush(mLogFile);
         }
 
         if (mLog_Options.mUse_Logcat) {

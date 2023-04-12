@@ -56,7 +56,6 @@ namespace OpenSA {
          * log release operations <-
         */
         bool mUse_Logcat = true;
-        int mOpened_FD = -1;
     };
 
     class OpenSA_Logger {
@@ -103,8 +102,8 @@ namespace OpenSA {
         /* std::unique_ptr<LOG_Options> mLog_Options; */
         LOG_Options mLog_Options;
 
-        FILE* m_Log_File = {};
-        std::chrono::time_point<std::chrono::system_clock> m_openDate = {};
+        FILE* mLogFile = {};
+        std::chrono::time_point<std::chrono::system_clock> mOpenDate = {};
     };
 
 };

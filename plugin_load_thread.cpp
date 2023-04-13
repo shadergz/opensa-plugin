@@ -66,21 +66,21 @@ namespace OpenSA_Threads {
         /* Start the hook thread now, we can continues the execution after his return */
         
         /* Fixing wasted wakeups, the mutex must be locked before the signal, and unlocks after the 
-         * signal function call 
+         * signal function call
         */
         pthread_mutex_lock(&gHook_Mutex);
         
         pthread_cond_signal(&gHook_Cond);
 
         pthread_mutex_unlock(&gHook_Mutex);
-        /* Waiting until the hook thread begin in finished state */
+        /* Waiting until the hook thread being in finished state */
         pthread_join(hook_thread, nullptr);
 
         static const struct timespec sleep_nano = {
             .tv_sec = 6,
         };
         while (true) {
-            Android_Info(gSA_logger, "Inside MAIN loop\n");
+            Android_Info(gSA_logger, "Inside main loop, we're running\n");
             nanosleep(&sleep_nano, nullptr);
         }
 
@@ -119,8 +119,11 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
     
     gJVM_Status = vm->GetEnv(reinterpret_cast<void**>(&gMAIN_Env), JNI_VERSION_1_6);
     if (gJVM_Status < 0) {
+        
         Android_Error(gSA_logger, "Failed to get the JNI env from the main process, assuming a native thread\n");
+        
         gJVM_Status = vm->AttachCurrentThread(&gMAIN_Env, nullptr);
+        
         if (gJVM_Status < 0) {
             Android_Error(gSA_logger, "For some reason, your device can't attach the current thread to JNI env\n");
             return JNI_ERR;
@@ -134,8 +137,10 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
      * __cxa_finalize@plt or inside similar functions.
     */
 #if defined(OPENSA_DEBUG)
+
     Android_Success(gSA_logger, "libGTASA.so image base address: %#lx\n", 
         gGTASA_SO.get_Native_Addr());
+
 #endif
     /* Starting the Hook thread, this thread will be locked until the VM call the OpenSA_Resume function */
     pthread_create(&hook_thread, nullptr, OpenSA_Threads::INIT_Hook_SYSTEM, nullptr);

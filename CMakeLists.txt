@@ -25,6 +25,8 @@ target_sources(OpenSA PRIVATE
     game/Game_Context.cpp 
     game/Hooks_Cortex.cpp
     game/MainMenu_Hooks.cpp
+    game/Texture_Runtime.cpp
+
     Address_Map.cpp
     SADIR_logfile.cpp
     )

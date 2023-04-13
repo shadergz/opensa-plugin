@@ -7,8 +7,6 @@
 
 #include "Game_Hooks.h"
 
-int gUnused_LogValue;
-
 namespace OpenSA::TextureDB_Runtime {
     uintptr_t GetTexture(const std::string_view texture_Name) {
         auto dbGetTexture = gGTASA_SO.make_Method<uintptr_t (*)(const char*)>(
@@ -17,7 +15,7 @@ namespace OpenSA::TextureDB_Runtime {
         // Getting the texure from the engine runtime database
         uintptr_t textureRwRef = (*dbGetTexture)(texture_Name.data());
         if (!textureRwRef) {
-            Android_Error(gMAIN_SA_Logger, gUnused_LogValue, "GetTexture: Can't get a new texture called %s\n",
+            Android_Error(gSA_logger, "GetTexture: Can't get a new texture called %s\n",
                 texture_Name.data());
             return 0;
         }
@@ -29,7 +27,7 @@ namespace OpenSA::TextureDB_Runtime {
         textureRefCount++;
         *reinterpret_cast<uint*>(textureRwRef + 0x64) = textureRefCount;
 
-        Android_Info(gMAIN_SA_Logger, gUnused_LogValue, "GetTexture: New texture called (%s) created at %p\n",
+        Android_Info(gSA_logger, "GetTexture: New texture called (%s) created at %p\n",
                 texture_Name.data(), textureRwRef);
 
         return textureRwRef;

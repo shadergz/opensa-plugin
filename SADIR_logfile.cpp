@@ -10,8 +10,6 @@
 #include "Address_Map.h"
 #include "game/Game_Hooks.h"
 
-static int32_t logRet = 0;
-
 namespace OpenSA {
 
     bool OpenSA_Logger::write_logHeader() {
@@ -56,16 +54,16 @@ namespace OpenSA {
             logFilename.data());
         
         if (fullPLLog == nullptr) {
-            Android_Error(gMAIN_SA_Logger, logRet, "Can't allocate the desired log file full pathname!\n");
+            Android_Error(gSA_logger, "Can't allocate the desired log file full pathname!\n");
             std::terminate();
         }
 
-        Android_Info(gMAIN_SA_Logger, logRet, "Will open a new Log file in %s\n", fullPLLog);
+        Android_Info(gSA_logger, "Will open a new Log file in %s\n", fullPLLog);
 
         mLogFile = fopen(fullPLLog, "a");
 
         if (!mLogFile) {
-            Android_Error(gMAIN_SA_Logger, logRet, "Couldn't open the new log file because of %s\n", 
+            Android_Error(gSA_logger, "Couldn't open the new log file because of %s\n", 
                 // https://pubs.opengroup.org/onlinepubs/9699919799/functions/uselocale.html
                 strerror_l(errno, uselocale(static_cast<locale_t>(0))));
             

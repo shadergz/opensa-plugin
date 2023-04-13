@@ -67,7 +67,7 @@ namespace OpenSA {
         OpenSA_Logger() noexcept;
         ~OpenSA_Logger();
 
-        #define Android_Logger_DO(logger, launch_result, status, format, ...)\
+        #define Android_Logger_DO(logger, status, format, ...)\
             do \
             {\
                 OpenSA::LOG_Location __actual_location {\
@@ -78,25 +78,23 @@ namespace OpenSA {
                     .mPriority = status,\
                     .mLocation = &__actual_location\
                 };\
-                launch_result = logger.Android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
+                logger.android_Launch(&__current_log_launch, format, ##__VA_ARGS__);\
             }\
             while(0)
 
-        #define Android_Success(logger, launch_result, format, ...)\
-            Android_Logger_DO(logger, launch_result, ANDROID_LOG_VERBOSE, format, ##__VA_ARGS__)
-        #define Android_Info(logger, launch_result, format, ...)\
-            Android_Logger_DO(logger, launch_result, ANDROID_LOG_INFO, format, ##__VA_ARGS__)
-        #define Android_Error(logger, launch_result, format, ...)\
-            Android_Logger_DO(logger, launch_result, ANDROID_LOG_ERROR, format, ##__VA_ARGS__)
+        #define Android_Success(logger, format, ...)\
+            Android_Logger_DO(logger, ANDROID_LOG_VERBOSE, format, ##__VA_ARGS__)
+        #define Android_Info(logger, format, ...)\
+            Android_Logger_DO(logger, ANDROID_LOG_INFO, format, ##__VA_ARGS__)
+        #define Android_Error(logger, format, ...)\
+            Android_Logger_DO(logger, ANDROID_LOG_ERROR, format, ##__VA_ARGS__)
         
-        ssize_t Android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...);
-        void configure_user_output(int opened_fd, const char* opt_filename = nullptr);
-
+        ssize_t android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...);
         bool setups_logFile(const std::string_view fullPath, const std::string_view logFilename);
 
     private:
-        ssize_t Android_Produce(LOG_Release_Info* produce_info);
-        void Android_Release(LOG_Release_Info* release_info);
+        ssize_t android_Produce(LOG_Release_Info* produce_info);
+        void android_Release(LOG_Release_Info* release_info);
 
         bool write_logHeader();
         /* std::unique_ptr<LOG_Options> mLog_Options; */

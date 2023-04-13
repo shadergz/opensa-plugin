@@ -11,7 +11,7 @@
 
 #include "SA_Config.h"
 
-OpenSA::OpenSA_Logger gMAIN_SA_Logger;
+OpenSA::OpenSA_Logger gSA_logger;
 OpenSA::JVM_Objects gThread_Objects;
 JNIEnv* gMAIN_Env = nullptr;
 
@@ -25,16 +25,15 @@ static int gJVM_Status;
 static ssize_t gLog_Result;
 
 Hook_I32_t GTASA_Native_Object::hookMessage_Release(Hook_Event_t status, const char* message) {
-    Hook_I32_t result = -1;
     switch(status) {
-    case HOOK_EVENT_SUCCESS: Android_Success(gMAIN_SA_Logger, result, message); break;
-    case HOOK_EVENT_INFO:    Android_Info(gMAIN_SA_Logger, result, message);    break;
-    case HOOK_EVENT_FAILED:  Android_Error(gMAIN_SA_Logger, result, message);   break;
+    case HOOK_EVENT_SUCCESS: Android_Success(gSA_logger, message); break;
+    case HOOK_EVENT_INFO:    Android_Info(gSA_logger, message);    break;
+    case HOOK_EVENT_FAILED:  Android_Error(gSA_logger, message);   break;
     }
-    return result;
+    return 0;
 }
 
-static constexpr const char* GTASA_NATIVE_OBJECT = "libGTASA.so";
+static constexpr const char* gGTASA_SO_name = "libGTASA.so";
 
 /* When game initialize this function will be called by the 
  * JVM from Android Runtime.
@@ -81,7 +80,7 @@ namespace OpenSA_Threads {
             .tv_sec = 6,
         };
         while (true) {
-            Android_Info(gMAIN_SA_Logger, gLog_Result, "Inside MAIN loop\n");
+            Android_Info(gSA_logger, "Inside MAIN loop\n");
             nanosleep(&sleep_nano, nullptr);
         }
 
@@ -98,14 +97,14 @@ namespace OpenSA_Threads {
         OpenSA_Cortex::__Apply_Patch_Level4();
 
         pthread_mutex_unlock(&gHook_Mutex);
-        Android_Info(gMAIN_SA_Logger, gLog_Result, "Hook thread has finished\n");
+        Android_Info(gSA_logger, "Hook thread has finished\n");
         return static_cast<void*>(thread_info);
     }
 
 };
 
 extern "C" JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_1Resume(JNIEnv* env, jobject GTASA_Context) {
-    Android_Info(gMAIN_SA_Logger, gLog_Result, "Resume has been called!\n");
+    Android_Info(gSA_logger, "Resume has been called!\n");
     gThread_Objects.Init_Load_Objects(&gJVM_Status, GTASA_Context);
     gThread_Objects.SpawnToast("OpenSA is running...", OpenSA::Toast_Duration::TOAST_SHORT);
 
@@ -114,28 +113,28 @@ extern "C" JNIEXPORT void JNICALL Java_com_rockstargames_gtasa_GTASA_OpenSA_1Res
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* unused) {
 
-    Android_Info(gMAIN_SA_Logger, gLog_Result, 
+    Android_Info(gSA_logger, 
         "OpenSA loaded into heap! and has hooked by the Android Runtime! " 
         "Compiled at: %s:%s\n", __DATE__, __TIME__);
     
     gJVM_Status = vm->GetEnv(reinterpret_cast<void**>(&gMAIN_Env), JNI_VERSION_1_6);
     if (gJVM_Status < 0) {
-        Android_Error(gMAIN_SA_Logger, gLog_Result, "Failed to get the JNI env from the main process, assuming a native thread\n");
+        Android_Error(gSA_logger, "Failed to get the JNI env from the main process, assuming a native thread\n");
         gJVM_Status = vm->AttachCurrentThread(&gMAIN_Env, nullptr);
         if (gJVM_Status < 0) {
-            Android_Error(gMAIN_SA_Logger, gLog_Result, "For some reason, your device can't attach the current thread to JNI env\n");
+            Android_Error(gSA_logger, "For some reason, your device can't attach the current thread to JNI env\n");
             return JNI_ERR;
         }
     }
 
     /* Searching for the native GTASA library */
-    gGTASA_SO.find_Base_Address(GTASA_NATIVE_OBJECT);
+    gGTASA_SO.find_Base_Address(gGTASA_SO_name);
     /* This is done here, because we won't that the search for libGTASA
      * occurs outside JNI_OnLoad event by functions like: pthread_atfork; 
      * __cxa_finalize@plt or inside similar functions.
     */
 #if defined(OPENSA_DEBUG)
-    Android_Success(gMAIN_SA_Logger, gLog_Result, "libGTASA.so image base address: %#lx\n", 
+    Android_Success(gSA_logger, "libGTASA.so image base address: %#lx\n", 
         gGTASA_SO.get_Native_Addr());
 #endif
     /* Starting the Hook thread, this thread will be locked until the VM call the OpenSA_Resume function */

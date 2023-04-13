@@ -1,16 +1,14 @@
 #include "opensa_logger.h"
 #include "opensa_objects.h"
 
-static int gMessageStatus = 0;
-
 namespace OpenSA {
 
     void JVM_Objects::Init_Load_Objects(int* env_Status, jobject javaContext) {
-        Android_Info(gMAIN_SA_Logger, gMessageStatus, "Loading some JNI methods\n");
+        Android_Info(gSA_logger, "Loading some JNI methods\n");
         /* Loading Toast class and methods */
         if (javaContext == nullptr)
         {
-            Android_Error(gMAIN_SA_Logger, gMessageStatus, "The context object is nullptr, this is an cruel error\n");
+            Android_Error(gSA_logger, "The context object is nullptr, this is an cruel error\n");
             return;
         }
         mThizContext = javaContext;
@@ -19,7 +17,7 @@ namespace OpenSA {
         mToast_MakeTextID = gMAIN_Env->GetStaticMethodID(mToast_Class, "makeText", "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;");
         
         if (mToast_MakeTextID == nullptr)
-            Android_Error(gMAIN_SA_Logger, gMessageStatus, "Can't locate the Toast method, Toast methods are disable\n");
+            Android_Error(gSA_logger, "Can't locate the Toast method, Toast methods are disable\n");
         
     }
 
@@ -27,7 +25,7 @@ namespace OpenSA {
         if (mToast_MakeTextID == nullptr)
             return;
         
-        Android_Info(gMAIN_SA_Logger, gMessageStatus, "Spawning the Toast message: %s\n", toast_Message);
+        Android_Info(gSA_logger, "Spawning the Toast message: %s\n", toast_Message);
 
         jstring tObject_Message = gMAIN_Env->NewStringUTF(toast_Message);
         if (gMAIN_Env->ExceptionOccurred()) {

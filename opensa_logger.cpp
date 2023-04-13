@@ -36,7 +36,7 @@ namespace OpenSA {
         }
     }
 
-    void OpenSA_Logger::Android_Release(LOG_Release_Info* release_info) {
+    void OpenSA_Logger::android_Release(LOG_Release_Info* release_info) {
         if (mLogFile != nullptr) {
             const char* cMessage = strchr(release_info->mOutput_Buffer, ')');
             if (!cMessage) return;
@@ -57,7 +57,7 @@ namespace OpenSA {
 
     }
 
-    ssize_t OpenSA_Logger::Android_Produce(LOG_Release_Info* produce_info) {
+    ssize_t OpenSA_Logger::android_Produce(LOG_Release_Info* produce_info) {
         switch(produce_info->mPriority_Event) {
         default:
         case ANDROID_LOG_UNKNOWN:
@@ -112,7 +112,7 @@ namespace OpenSA {
         return static_cast<ssize_t>(bfPointer);
     }
 
-    ssize_t OpenSA_Logger::Android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...) {
+    ssize_t OpenSA_Logger::android_Launch(const LOG_Launch_Data* launch_data, const char* format, ...) {
         va_list variable_arguments;
 
         va_start(variable_arguments, format);
@@ -125,8 +125,8 @@ namespace OpenSA {
         memcpy(&loginfo.mLog_Location, launch_data->mLocation, sizeof(LOG_Location));
         vsnprintf(loginfo.mFormat_Buffer, FORMAT_BUFFER_SZ, format, variable_arguments);
 
-        const auto produce_result = Android_Produce(&loginfo);
-        Android_Release(&loginfo);
+        const auto produce_result = android_Produce(&loginfo);
+        android_Release(&loginfo);
         va_end(variable_arguments);
         return produce_result;
     }

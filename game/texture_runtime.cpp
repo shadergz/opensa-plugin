@@ -1,11 +1,11 @@
-#include "TextureDB.h"
+#include "texture_db.h"
 
 #include "opensa_logger.h"
 #include "opensa_objects.h"
 
-#include "Address_Map.h"
+#include "address_map.h"
 
-#include "Game_Hooks.h"
+#include "game_hooks.h"
 
 namespace OpenSA::TextureDB_Runtime {
     uintptr_t GetTexture(const std::string_view texture_Name) {

@@ -7,8 +7,8 @@
 
 #include "opensa_logger.h"
 #include "opensa_objects.h"
-#include "Address_Map.h"
-#include "game/Game_Hooks.h"
+#include "address_map.h"
+#include "game/game_hooks.h"
 
 namespace OpenSA {
 

@@ -1,9 +1,9 @@
-[submodule "vendor/bra64rt"]
-	path = vendor/bra64rt
-	url = https://github.com/beloncode/bra64rt.git
+[submodule "vendor/branchrt"]
+	path = vendor/branchrt
+	url = https://github.com/shadergz/branchrt.git
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "vendor/RakNet"]
 	path = vendor/RakNet
-	url = https://github.com/beloncode/RakNet.git
+	url = https://github.com/shadergz/RakNet.git

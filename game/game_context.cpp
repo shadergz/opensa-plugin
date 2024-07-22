@@ -1,4 +1,4 @@
-#include "Game_Hooks.h"
+#include "game_hooks.h"
 
 GTASA_Native_Object gGTASA_SO;
 

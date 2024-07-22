@@ -11,9 +11,9 @@ else()
     set_target_properties(OpenSA PROPERTIES LINK_FLAGS_RELEASE -s)
 endif()
 
-configure_file(SA_Config.h.in SA_Config.h)
+configure_file(sa_config.h.in sa_config.h)
 
-add_subdirectory(vendor/bra64rt)
+add_subdirectory(vendor/branchrt)
 
 set(RAKNET_ENABLE_DLL True)
 add_subdirectory(vendor/RakNet)
@@ -21,17 +21,17 @@ target_include_directories(OpenSA PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BI
 target_sources(OpenSA PRIVATE 
     plugin_load_thread.cpp 
     opensa_logger.cpp 
-    Virtual_ENV.cpp
-    game/Game_Context.cpp 
-    game/Hooks_Cortex.cpp
-    game/MainMenu_Hooks.cpp
-    game/Texture_Runtime.cpp
+    virtual_env.cpp
+    game/game_context.cpp 
+    game/hooks_cortex.cpp
+    game/main_menu_hooks.cpp
+    game/texture_runtime.cpp
 
-    Address_Map.cpp
-    SADIR_logfile.cpp
+    address_map.cpp
+    sadir_logfile.cpp
     )
 
-target_link_libraries(OpenSA bra64rt log)
+target_link_libraries(OpenSA branchrt log)
 
 install(TARGETS OpenSA LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/output)
 install(TARGETS RakNet LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/output)

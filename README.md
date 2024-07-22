@@ -1,4 +1,4 @@
-# opensa-plugin (Deprecated, see sampexp-20)
+# opensa-plugin (Deprecated, see sampdroid)
 **All modifications are only for study purposes and only work on ARMv8-A devices**
 
 ### Tooling in use

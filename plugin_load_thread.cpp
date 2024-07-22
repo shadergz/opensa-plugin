@@ -7,10 +7,8 @@
 #include "opensa_logger.h"
 #include "opensa_objects.h"
 
-#include "game/Game_Hooks.h"
-
-#include "SA_Config.h"
-
+#include "game/game_hooks.h"
+#include "sa_config.h"
 OpenSA::OpenSA_Logger gSA_logger;
 OpenSA::JVM_Objects gThread_Objects;
 JNIEnv* gMAIN_Env = nullptr;

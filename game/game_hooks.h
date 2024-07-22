@@ -3,8 +3,8 @@
 
 #include <cassert>
 
-#include <bra64rt/object_native_info.h>
-#include <bra64rt/runtime_object.h>
+#include <branchrt/object_native_info.h>
+#include <branchrt/runtime_object.h>
 
 using namespace RuntimeHook::RuntimeObject;
 using namespace RuntimeHook::ObjectInfo;
